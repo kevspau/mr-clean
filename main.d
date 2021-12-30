@@ -2,6 +2,7 @@ module main;
 import std.file, std.stdio, std.path, std.string, std.json;
 import std.algorithm.sorting : sort;
 import std.algorithm.searching : canFind;
+import std.algorithm.mutation : remove;
 import std.conv : to;
 import std.range;
 import std.process;
@@ -37,6 +38,7 @@ void main()
                 foreach (_, string vt; conf.extraExts()) { //might be mandatory for dirEntries loops
                     foreach (string n; dirEntries(v, vt, SpanMode.breadth))         //STILL SHOWS OLD EXTENSIONS
                     {
+                        writeln("dodododododdo      " ~ n);
                         execs = execs ~ n;
                     }
                 }
@@ -52,8 +54,7 @@ void main()
             foreach (i, vt; v.array)
             { //look for config execs here in this scope
                 string[] execs;
-                try
-                {
+                try {
                     foreach (_, string vtt; conf.extraExts()) {
                         foreach (string n; dirEntries(vt.str, vtt, SpanMode.breadth))             //here
                         { //specifies .exe files (for now)
@@ -61,9 +62,7 @@ void main()
                         } 
                     }
                     sortedConfigFiles = sortedConfigFiles ~ execs;
-                }
-                catch (FileException)
-                {
+                } catch (FileException) {
                     throw new Error("FileException: Directory " ~ vt.str ~ " does not exist");
                 } /*finally {
                     throw new Error("Unknown error occured relating to .config file.");
@@ -79,8 +78,13 @@ void main()
     foreach (_, string v; sortedPaths) //this is where you should edit settings for the execs, it loops through every directory, both path and config ones
     {
         string nfile;
+        auto a = thisExePath().split(dirSeparator);
+        if (v.endsWith(a[a.length - 1])) {
+            //sortedPaths = remove(sortedPaths, v);
+            continue;
+        }
         if (!(conf.showPaths())) {
-            auto file = split(v, "\\"); //gets just the filename
+            auto file = split(v, dirSeparator); //gets just the filename
             nfile = file[file.length - 1].toLower();
         } else {
             nfile = v.toLower();
@@ -91,9 +95,21 @@ void main()
         if (!(conf.moreInfo())) {
             sortedFiles = sortedFiles ~ nfile;
         } else {
-            nfile = nfile ~ "       Modified " ~ v.timeLastModified().toString() ~ "       " ~ to!string(v.getSize() / 1_000_000) ~ " MB";
-            sortedFiles = sortedFiles ~ nfile;
+            string size;
+            if (v.getSize() / 1_024 <= 0) {
+                size = to!string(v.getSize()) ~ " B";
+            } else if (v.getSize() / 1_048_576 <= 0) {
+                size = to!string(v.getSize() / 1_024) ~ " KB";
+            } else {
+                size = to!string(v.getSize() / 1_048_576) ~ " MB";
+            }
+            nfile = nfile ~ "       Modified " ~ v.timeLastModified().toString() ~ "       " ~ size; //1_000_000
         }
+        if (sortedFiles.canFind(nfile)) { //doesnt work for some weird reason, check later
+            writeln("ogjfgjfigf");
+            continue;
+        }
+        sortedFiles = sortedFiles ~ nfile;
     }
     if (conf.reverseOrder) {
         sortedFiles.sort!("a > b").release();
