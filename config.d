@@ -95,14 +95,12 @@ public string[] extraExts() {
     foreach (string k, v; pc) {
         if (k == "extra_settings") {
             foreach (string kt, vt; v) {
-                if (kt == "extra_extensions" && vt.type is JSONType.array) {
+                if (kt == "extensions" && vt.type is JSONType.array) {
                     string[] stuff;
                     foreach (_, vtt; vt.array) {
                         stuff = stuff ~ vtt.str;
                     }
                     return stuff;
-                } else {
-                    return [];
                 }
             }
         }
