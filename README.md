@@ -12,5 +12,5 @@ clean up your taskbar/desktop/start menu
 
 
 ## known issues
-- microsoftedge and mspaint appear twice(honestly not sure if this is a bug)
-- an executable called main.exe appears without a path(may be the program itself)
+- microsoftedge and other execs appear twice(i think because of shortcuts)
+- an executable called main.exe appears without a path(may be the program itself) [SOLVED]
