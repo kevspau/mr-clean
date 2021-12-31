@@ -38,8 +38,7 @@ void main()
                 foreach (_, string vt; conf.extraExts()) { //might be mandatory for dirEntries loops
                     foreach (string n; dirEntries(v, vt, SpanMode.breadth))         //STILL SHOWS OLD EXTENSIONS
                     {
-                        writeln("dodododododdo      " ~ n);
-                        execs = execs ~ n;
+                        execs ~= n;
                     }
                 }
             }
@@ -58,10 +57,10 @@ void main()
                     foreach (_, string vtt; conf.extraExts()) {
                         foreach (string n; dirEntries(vt.str, vtt, SpanMode.breadth))             //here
                         { //specifies .exe files (for now)
-                            execs = execs ~ n;
+                            execs ~= n;
                         } 
                     }
-                    sortedConfigFiles = sortedConfigFiles ~ execs;
+                    sortedConfigFiles ~= execs;
                 } catch (FileException) {
                     throw new Error("FileException: Directory " ~ vt.str ~ " does not exist");
                 } /*finally {
@@ -72,16 +71,16 @@ void main()
     }
     sortedConfigPaths = sortedConfigPaths.sort().release(); //actually sorts config paths
     sortedPaths = sortedDefFiles ~ sortedConfigFiles;
-        sortedPaths = sortedPaths.sort().release(); //sorts all paths together normally
+    sortedPaths = sortedPaths.sort().release(); //sorts all paths together normally
     sortedPaths = sortedPaths.sort().release(); //sorts all paths together
     string[] sortedFiles; //sorted files(JUST FILENAMES), might include extensions
-    foreach (_, string v; sortedPaths) //this is where you should edit settings for the execs, it loops through every directory, both path and config ones
+    settings: foreach (_, string v; sortedPaths) //this is where you should edit settings for the execs, it loops through every directory, both path and config ones
     {
         string nfile;
         auto a = thisExePath().split(dirSeparator);
         if (v.endsWith(a[a.length - 1])) {
             //sortedPaths = remove(sortedPaths, v);
-            continue;
+            continue settings;
         }
         if (!(conf.showPaths())) {
             auto file = split(v, dirSeparator); //gets just the filename
@@ -93,7 +92,7 @@ void main()
             nfile = nfile.stripExtension(); //removes extension
         }
         if (!(conf.moreInfo())) {
-            sortedFiles = sortedFiles ~ nfile;
+            sortedFiles ~= nfile;
         } else {
             string size;
             if (v.getSize() / 1_024 <= 0) {
@@ -103,13 +102,13 @@ void main()
             } else {
                 size = to!string(v.getSize() / 1_048_576) ~ " MB";
             }
-            nfile = nfile ~ "       Modified " ~ v.timeLastModified().toString() ~ "       " ~ size; //1_000_000
+            nfile ~= "       Modified " ~ v.timeLastModified().toString() ~ "       " ~ size; //1_000_000
         }
         if (sortedFiles.canFind(nfile)) { //doesnt work for some weird reason, check later
             writeln("ogjfgjfigf");
-            continue;
+            continue settings;
         }
-        sortedFiles = sortedFiles ~ nfile;
+        sortedFiles ~= nfile;
     }
     if (conf.reverseOrder) {
         sortedFiles.sort!("a > b").release();
