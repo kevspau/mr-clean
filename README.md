@@ -2,7 +2,7 @@
 clean up your taskbar/desktop/start menu
 
 
-## **not done yet**
+## Status - **usable for the most part(1-2 bugs)**
 
 ## basic stuff
 - Linux support is planned, but as of right now only Windows is supported
