@@ -13,4 +13,3 @@ clean up your taskbar/desktop/start menu
 
 ## known issues
 - microsoftedge and other execs appear twice(i think because of shortcuts)
-- an executable called main.exe appears without a path(may be the program itself) [SOLVED]
